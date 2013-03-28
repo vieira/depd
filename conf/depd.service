@@ -1,0 +1,11 @@
+[Unit]
+Description=Deployment daemon (systemd service example)
+
+[Service]
+WorkingDirectory=/etc
+ExecStart=/usr/bin/depd --config depd.json
+Restart=on-abort
+SuccessExitStatus=2
+
+[Install]
+WantedBy=multi-user.agent

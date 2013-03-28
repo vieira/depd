@@ -1,0 +1,23 @@
+{
+  "listen": ":1337",
+  "repositories": [
+  {
+      "url": "https://github.com/vieira/derp-ninja",
+      "ref": "refs/heads/master",
+      "path": "/tmp/test",
+      "owner": {
+          "email": "vieira@yubo.be",
+          "name": "vieira"
+      }
+  },
+  {
+      "url": "https://bitbucket.org/vieira/bit-ninja",
+      "ref": "master",
+      "path": "/tmp/bit-test/wp-content",
+      "owner": {
+          "email": "vieira@yubo.be",
+          "name": "vieira"
+      }
+  }
+  ]
+}
