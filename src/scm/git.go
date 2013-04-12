@@ -15,7 +15,14 @@ func (g Git) Pull(r *Push) (*bytes.Buffer, error) {
     log.Println("Receiving push...")
     log.SetOutput(os.Stdout)
 
-    cmd := exec.Command("git", "pull", "origin", r.Ref)
+    cmd := exec.Command("git", "reset", "--hard")
+    cmd.Dir = r.Repository.Path
+    cmd.Stdout = &out
+    if err := cmd.Run(); err != nil {
+        return nil, err
+    }
+
+    cmd = exec.Command("git", "pull", "origin", r.Ref)
     cmd.Dir = r.Repository.Path
     cmd.Stdout = &out
     if err := cmd.Run(); err != nil {
