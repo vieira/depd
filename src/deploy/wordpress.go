@@ -113,6 +113,7 @@ func (w *Wordpress) move(path string) {
     }
 
     os.Rename(path+"/db-config.php", tmp+"/db-config.php") // hyperdb config
+    os.Rename(path+"/pdo-config.php", tmp+"/pdo-config.php") // XXX
 
     if err := os.RemoveAll(path); err != nil {
         log.Println(err)
