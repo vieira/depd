@@ -4,7 +4,6 @@ import (
     "io"
     "os"
     "log"
-    "bytes"
     "strings"
     "io/ioutil"
     "os/exec"
@@ -19,7 +18,7 @@ type Wordpress struct {
     Address string
 }
 
-func (w *Wordpress) Deploy(r *scm.Push, out *bytes.Buffer) {
+func (w *Wordpress) Deploy(r *scm.Push) {
     log.Println("Wordpress deployment detected")
 
     if err := json.Unmarshal(w.data, &w); err != nil {

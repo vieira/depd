@@ -2,37 +2,40 @@ package deploy
 
 import (
     "log"
-    "os"
     "encoding/json"
     "io/ioutil"
-    "bytes"
     "scm"
 )
 
 type Deployers map[string] Deployer
 
 type Deployer interface {
-    Deploy(*scm.Push, *bytes.Buffer)
+    Deploy(*scm.Push)
     Data([]byte)
 }
 
 type manifest struct {
-    Type        string
+    Type string
+    Settings json.RawMessage
 }
 
-func (ds Deployers) Deploy(r *scm.Push, out *bytes.Buffer) {
-    var m manifest
-    log.SetOutput(out)
+func (ds Deployers) Deploy(r *scm.Push) {
+    var ms []manifest
     file := r.Repository.Path + "/.depd.json"
     if data, err := ioutil.ReadFile(file); err != nil {
         log.Println(err)
-    } else if err := json.Unmarshal(data, &m); err != nil {
+    } else if err := json.Unmarshal(data, &ms); err != nil {
         log.Println(err)
-    } else if d, ok := ds[m.Type]; ok {
-        d.Data(data)
-        d.Deploy(r, out)
+    } else {
+        for _, m := range ms {
+            if d, ok := ds[m.Type]; ok {
+                d.Data(m.Settings)
+                d.Deploy(r)
+            } else {
+                log.Println("Skipping unknown deployment type " + m.Type)
+            }
+        }
     }
-    log.SetOutput(os.Stdout)
 }
 
 func (ds Deployers) Data(_ []byte) {

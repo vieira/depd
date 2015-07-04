@@ -31,11 +31,10 @@ func protocol(t adapt.Adaptor, p scm.Puller, d deploy.Deployer,
         if err != nil {
             if _, ok := err.(*adapt.UnknownRepoError); ok {
                 http.NotFound(w, r)
-                log.Println(err)
             } else {
                 http.Error(w, err.Error(), http.StatusBadRequest)
-                log.Println(err)
             }
+            log.Println(err)
             return
         }
 
@@ -46,8 +45,10 @@ func protocol(t adapt.Adaptor, p scm.Puller, d deploy.Deployer,
             return
         } else {
             w.WriteHeader(http.StatusOK)
+            log.SetOutput(out)
             // Additional deployment steps
-            d.Deploy(m, out)
+            d.Deploy(m)
+            log.SetOutput(os.Stdout)
             // Notify owner
             n.Notify(m, out)
         }
@@ -62,7 +63,15 @@ func main() {
     c := config.Read(*configFile)
     p := &scm.Git {}
     n := &notify.Notifiers { &notify.Mail { Hostname: hostname } }
-    d := &deploy.Deployers { "Wordpress": &deploy.Wordpress {} }
+    d := &deploy.Deployers { "Wordpress": &deploy.Wordpress {},
+                             "Composer": &deploy.Composer {} }
+
+    if c.Slack != nil {
+        *n = append(*n, &notify.Slack { Webhook: c.Slack.Webhook,
+                                        Username: c.Slack.Username,
+                                        Icon: c.Slack.Icon,
+                                        Channel: c.Slack.Channel })
+    }
 
     http.Handle("/g", handlers {"POST": protocol(&adapt.Github {}, p, d, n, c)})
     http.Handle("/b", handlers {"POST": protocol(&adapt.Bitbucket {},p,d,n, c)})
