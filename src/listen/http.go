@@ -61,6 +61,7 @@ func main() {
     flag.Parse()
 
     c := config.Read(*configFile)
+    go c.ListenAndConfigure(*configFile)
     p := &scm.Git {}
     n := &notify.Notifiers { &notify.Mail { Hostname: hostname } }
     d := &deploy.Deployers { "Wordpress": &deploy.Wordpress {},

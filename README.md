@@ -28,6 +28,13 @@ after deployment is complete a log of the various actions executed can be sent
 as a notification. a mail notifier is included but it is easy to write other
 notifiers for hipchat, irc, etc.
 
+live configuration
+----------------------
+
+connect to unix socket on /tmp/depd.sock to change the configuration without
+having to restart the daemon. it is possible to list, add and remove
+repositories. e.g. `nc -U /tmp/depd.sock` and type `<username owner> add -help` or `<username owner> list`.
+
 batteries included
 ----------------------
 
